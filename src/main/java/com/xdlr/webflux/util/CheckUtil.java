@@ -1,6 +1,6 @@
 package com.xdlr.webflux.util;
 
-import com.xdlr.webflux.exceptions.CheckException;
+import com.xdlr.webflux.exception.CheckException;
 
 import java.util.stream.Stream;
 

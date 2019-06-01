@@ -1,4 +1,4 @@
-package com.xdlr.webflux.exceptions;
+package com.xdlr.webflux.exception;
 
 import lombok.Data;
 
