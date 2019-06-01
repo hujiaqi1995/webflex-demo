@@ -2,12 +2,15 @@ package com.xdlr.webflux.controller;
 
 import com.xdlr.webflux.domain.User;
 import com.xdlr.webflux.repository.UserRepository;
+import com.xdlr.webflux.util.CheckUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/user")
@@ -21,18 +24,18 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public Flux<User> getAll(){
+    public Flux<User> getAll() {
         return repository.findAll();
     }
 
     @GetMapping(value = "/stream/all", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<User> streamGetAll(){
+    public Flux<User> streamGetAll() {
         return repository.findAll();
     }
 
     @PostMapping("/")
-    public Mono<User> createUser(@RequestBody User user) {
-
+    public Mono<User> createUser(@Valid @RequestBody User user) {
+        CheckUtil.checkName(user.getName());
         return this.repository.save(user);
     }
 
@@ -47,7 +50,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<User>> updateUser(@PathVariable("id") String id, @RequestBody User user) {
+    public Mono<ResponseEntity<User>> updateUser(@PathVariable("id") String id,
+                                                 @Valid @RequestBody User user) {
+        CheckUtil.checkName(user.getName());
         return this.repository.findById(id)
                 .flatMap(u -> {
                     u.setAge(user.getAge());
@@ -67,12 +72,12 @@ public class UserController {
 
     @GetMapping("/age/{start}/{end}")
     public Flux<User> FindByAge(@PathVariable("start") int start, @PathVariable("end") int end) {
-        return this.repository.findByAgeBetween(start,end);
+        return this.repository.findByAgeBetween(start, end);
     }
 
     @GetMapping(value = "/stream/age/{start}/{end}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<User> streamFindByAge(@PathVariable("start") int start, @PathVariable("end") int end) {
-        return this.repository.findByAgeBetween(start,end);
+        return this.repository.findByAgeBetween(start, end);
     }
 
     @GetMapping(value = "/age/old")
